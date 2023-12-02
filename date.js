@@ -1,66 +1,52 @@
-// Задание 1
-// Написать утилиту получения текущей даты и времени с богатым интерфейсом. Для реализации парсинга аргументов командной строки предлагаем использовать yargs
-
-// Текущая дата и время в формате ISO:
-// cmd current
-
 const yargs = require("yargs/yargs");
 const { hideBin} = require("yargs/helpers");
 
-const argv = yargs(hideBin(process.argv)).argv;
-    // .option(
-    //     'current', {
-    //         alias: "current", 
-    //         type: "boolean",
-    //         description: "current date"
-    //     })
-    // .option(
-    //     'add', {
-    //         alias: "add", 
-    //         type: "boolean",
-    //         description: "current date"
-    //     })
-    // .option(
-    //     'sub', {
-    //         alias: "sub", 
-    //         type: "boolean",
-    //         description: "current date"
-    //     })
-    // .argv;
+const argv = yargs(hideBin(process.argv))
+    .option(
+        '-y', {
+            alias: "--year", 
+            type: "boolean",
+            description: "current year"
+        })
+    .option(
+        '-m', {
+            alias: "--month", 
+            type: "number" | "boolean",
+            description: "current month",
+        })
+    .argv;
 
+const operator = argv._[0];
 
-console.log(argv);
-
-const addDate = () => {
-
+const getCurrentDate = (argv) => {
+    if (argv["--year"] || argv["-y"]) return new Date().getFullYear();
+    if (argv["--month"] || argv["-m"]) return new Date().getMonth();
+    if (argv["--date"] || argv["-d"]) return new Date().getTime();
+    return new Date();
 }
 
-const subDate = () => {
-    
+const constructDate = (thingToProcess, toDo) => {
+    const amount = argv[thingToProcess];
+    return `${toDo} ${amount} ${thingToProcess}`;
 }
 
-const getCurrentDate = () => {
-    switch (key) {
-        case "--year" || "-y":
-            return new Date().getFullYear();
-        case "--month" || "-m":
-            return new Date().getMonth();
-        case "--day" || "-d":
-            return new Date().getDay();
-        default: return new Date();
-    }
-    
+const processDate = (argv, toDo) => {
+    if (argv["day"] || argv["d"]) return constructDate("day", toDo);
+    if (argv["month"] || argv["m"]) return constructDate("month", toDo);
+    return 'You passed incorrect data';
 }
 
 
-// Текущий год:
-// cmd current --year или cmd current -y
 
-// Текущий месяц:
-// cmd current --month или cmd current -m
-
-// Дата в календарном месяце:
-// cmd current --date или cmd current -d
-
-// Необходимо добавить возможность получать даты в прошлом или будущем через команды add и sub:
-// cmd add -d 2 - дата и время в формате ISO на два дня вперед cmd sub --month 1 - дата и время в формате ISO на 1 месяц назад
+switch (operator) {
+    case 'current':
+        console.log(getCurrentDate(argv));
+        break;
+    case 'add': 
+        console.log(processDate(argv, 'add'));
+        break
+    case 'sub': 
+        console.log(processDate(argv, 'sub'));
+        break;
+    default: break;
+}
