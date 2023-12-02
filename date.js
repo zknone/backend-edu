@@ -27,7 +27,8 @@ const getCurrentDate = (argv) => {
 
 const constructDate = (thingToProcess, toDo) => {
     const amount = argv[thingToProcess];
-    return `${toDo} ${amount} ${thingToProcess}`;
+
+    return `${toDo} ${amount} ${thingToProcess} – ${new Date().getUTCDay}`;
 }
 
 const processDate = (argv, toDo) => {
