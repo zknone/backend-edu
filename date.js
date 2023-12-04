@@ -28,7 +28,7 @@ const getCurrentDate = (argv) => {
 }
 
 const constructDate = (thingToProcess, toDo) => {
-    const amount = argv[thingToProcess];
+    const amount = toDo === "add" ? argv[thingToProcess] : - argv[thingToProcess];
 
     let newDate = new Date();
 
