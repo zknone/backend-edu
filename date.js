@@ -29,11 +29,12 @@ const getCurrentDate = (argv) => {
 
 const constructDate = (thingToProcess, toDo) => {
     const amount = argv[thingToProcess];
-    const year = new Date().getFullYear();
-    const month = new Date().getMonth();
-    const day = new Date().getMonth();
 
-    return `${toDo} ${amount} ${thingToProcess} – ${day} ${month} ${year}`;
+    let newDate = new Date();
+
+    newDate.setMonth((newDate.getMonth()) + amount);
+
+    return `${toDo} ${amount} ${thingToProcess} – ${newDate}`;
 }
 
 const processDate = (argv, toDo) => {
