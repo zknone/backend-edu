@@ -41,10 +41,7 @@ const constructDate = (thingToProcess, toDo) => {
     if (thingToProcess === 'month') newDate.setMonth(newDate.getMonth() + amount);
     if (thingToProcess === 'day') newDate.setDate(newDate.getDate() + amount);
 
-    console.log('Amount:', amount);
-    console.log('New Date:', newDate);
-
-    const formattedDate = newDate.toLocaleDateString(); // Format the date
+    const formattedDate = newDate.toLocaleDateString(); 
 
     return `${toDo} ${amount} ${thingToProcess} – ${formattedDate}`;
 }
