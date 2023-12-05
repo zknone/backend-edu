@@ -16,6 +16,12 @@ const argv = yargs(hideBin(process.argv))
             type: "number" | "boolean",
             description: "current month",
         })
+    .option(
+        '-d', {
+            alias: "--day", 
+            type: "number",
+            description: "added days",
+        })
     .argv;
 
 const operator = argv._[0];
@@ -28,13 +34,19 @@ const getCurrentDate = (argv) => {
 }
 
 const constructDate = (thingToProcess, toDo) => {
-    const amount = toDo === "add" ? argv[thingToProcess] : - argv[thingToProcess];
+    const amount = toDo === "add" ? argv[thingToProcess] : -argv[thingToProcess];
 
     let newDate = new Date();
 
-    newDate.setMonth((newDate.getMonth()) + amount);
+    if (thingToProcess === 'month') newDate.setMonth(newDate.getMonth() + amount);
+    if (thingToProcess === 'day') newDate.setDate(newDate.getDate() + amount);
 
-    return `${toDo} ${amount} ${thingToProcess} – ${newDate}`;
+    console.log('Amount:', amount);
+    console.log('New Date:', newDate);
+
+    const formattedDate = newDate.toLocaleDateString(); // Format the date
+
+    return `${toDo} ${amount} ${thingToProcess} – ${formattedDate}`;
 }
 
 const processDate = (argv, toDo) => {
