@@ -1,37 +1,37 @@
 #!/usr/bin/env node
-const readline = require('readline');
 const fs = require('fs');
-const path = require('path');
 
-// console.log(path.parse(__filename));
-// console.log(path.join(__filename, 'test', '..', '//demo.txt'));
+const readStream = fs.createReadStream('package.json');
 
-const dir = path.join(__dirname, 'demo');
-// fs.mkdir(dir, (error) => {
-//   if (error) throw Error(error);
-//   console.log('Done!');
-// });
+let data;
 
-const file = path.join(__dirname, 'demo', 'new.txt');
-
-// fs.mkdir(file, (error) => {
-//   if (error) throw Error(error);
-//   console.log('Done!');
-// });
+readStream
+  .setEncoding('utf-8')
+  .on('data', (chunk) => {
+    data += chunk;
+  })
+  .on('end', () => {
+    console.log('end', data);
+  });
 
 const content = 'content \n';
+const writeStream = fs.createWriteStream('output.txt');
+writeStream.write(content, 'utf-8');
+writeStream.end();
 
-// fs.writeFile(file, content, (error) => {
-//   if (error) throw Error(error);
-//   console.log('Done!');
-// })
+writeStream.on('finish', ()=> {
+  console.log('finish');
+});
 
-fs.appendFile(file, content, (error) => {
-  if (error) throw Error(error);
-  console.log('Edited!');
+writeStream.on('close', ()=> {
+  console.log('close');
 })
 
-fs.readFile(file, 'utf-8',(error, data) => {
-  if (error) throw Error(error);
-  console.log(data);
-});
+writeStream.on('error', ()=> {
+  console.error('error');
+})
+
+let readStreamFirst = fs.createReadStream('package.json');
+let writeStreamSecond = fs.createWriteStream('output.txt');
+
+readStreamFirst.pipe(writeStreamSecond);
