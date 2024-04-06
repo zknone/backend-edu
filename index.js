@@ -4,7 +4,28 @@ const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
 
-const log = path.join(__dirname, 'public', 'log.txt');
+const yargs = require("yargs/yargs");
+const { hideBin} = require("yargs/helpers");
+
+const argv = yargs(hideBin(process.argv)).
+option(
+  'play', {
+      alias: "play", 
+      type: "string",
+      description: "add to file"
+  })
+.option(
+  'read', {
+      alias: "read", 
+      type: "string",
+      description: "read file",
+  })
+.argv;
+
+const fileName = argv._[1];
+const work = argv._[0];
+
+const log = path.join(__dirname, 'public', fileName);
 
 function writeResult (isCorrect) {
   const logLine = `{isCorrect: ${isCorrect}}, \n`;
@@ -56,5 +77,40 @@ function guessDie() {
   askUser();
 }
 
-guessDie();
+if (work === 'play') {
+  guessDie();
+}
+
+if (work === 'read') {
+  console.log(log);
+  const readStream = fs.createReadStream(log);
+  let data = '';
+
+  readStream
+  .setEncoding('utf-8')
+  .on('data', (chunk) => {
+    data += chunk;
+  })
+  .on('end', () => {
+    const adaptedData = data.split(', \n');
+    adaptedData.pop();
+    const transformedData = adaptedData.map(item => {
+      const cleanedItem = item.replace(/'/g, '"');
+      return JSON.parse(cleanedItem);
+    });
+
+    const loses = transformedData.filter(item => item.isCorrect === false).length;
+    const wins = transformedData.filter(item => item.isCorrect === true).length;
+    const ratio = ((wins / transformedData.length) * 100).toFixed(0);
+
+    console.log('Общее количество партий', transformedData.length);
+    console.log('Количество побед', wins);
+    console.log('Количество поражений', loses);
+    console.log('Процента ваших побед', `${ratio} %`);
+
+  });
+
+
+}
+
 

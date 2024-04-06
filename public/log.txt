@@ -1,3 +1,4 @@
-{isCorrect: true}, 
-{isCorrect: false}, 
-{isCorrect: true}, 
+{'isCorrect': true}, 
+{'isCorrect': false}, 
+{'isCorrect': false}, 
+{'isCorrect': false}, 
