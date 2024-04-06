@@ -3,39 +3,35 @@ const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
 
-function guessNumber() {
-  const secretNumber = Math.floor(Math.random() * 1);
-  console.log('Решка подброшена');
+// console.log(path.parse(__filename));
+// console.log(path.join(__filename, 'test', '..', '//demo.txt'));
 
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
+const dir = path.join(__dirname, 'demo');
+// fs.mkdir(dir, (error) => {
+//   if (error) throw Error(error);
+//   console.log('Done!');
+// });
 
-  function askUser() {
-    rl.question('Введите число: ', (userInput) => {
-      const userNumber = parseInt(userInput);
+const file = path.join(__dirname, 'demo', 'new.txt');
 
-      if (isNaN(userNumber)) {
-        console.log('Пожалуйста, введите корректное число.');
-        askUser();
-      } else {
-        if (userNumber === secretNumber) {
-          console.log(`Отгадано число ${secretNumber}`);
-          rl.close();
-        } else if (userNumber < secretNumber) {
-          console.log('Больше');
-          askUser();
-        } else {
-          console.log('Меньше');
-          askUser();
-        }
-      }
-    });
-  }
+// fs.mkdir(file, (error) => {
+//   if (error) throw Error(error);
+//   console.log('Done!');
+// });
 
-  askUser();
-}
+const content = 'content \n';
 
-guessNumber();
+// fs.writeFile(file, content, (error) => {
+//   if (error) throw Error(error);
+//   console.log('Done!');
+// })
 
+fs.appendFile(file, content, (error) => {
+  if (error) throw Error(error);
+  console.log('Edited!');
+})
+
+fs.readFile(file, 'utf-8',(error, data) => {
+  if (error) throw Error(error);
+  console.log(data);
+});
