@@ -2,8 +2,8 @@
 const readline = require('readline');
 
 function guessNumber() {
-  const secretNumber = Math.floor(Math.random() * 101);
-  console.log('Загадано число в диапазоне от 0 до 100');
+  const secretNumber = Math.floor(Math.random() * 1);
+  console.log('Решка подброшена');
 
   const rl = readline.createInterface({
     input: process.stdin,
