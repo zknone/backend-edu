@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 const readline = require('readline');
+const fs = require('fs');
+const path = require('path');
 
 function guessNumber() {
   const secretNumber = Math.floor(Math.random() * 1);
