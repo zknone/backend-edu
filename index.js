@@ -35,3 +35,12 @@ let readStreamFirst = fs.createReadStream('package.json');
 let writeStreamSecond = fs.createWriteStream('output.txt');
 
 readStreamFirst.pipe(writeStreamSecond);
+
+
+// игра загадывает случайное число (1 или 2) и предлагает пользователю угадывать его, - это написано
+
+// в качестве аргументов программа принимает на вход имя файла для логирования результатов каждой партии,
+// принимает cmd --имя файла
+// генерирует лог: угадал - не угадал, 
+// {id: id, won: false}
+// записывает в конец файла дату и лог
