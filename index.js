@@ -1,46 +1,60 @@
 #!/usr/bin/env node
+
+const readline = require('readline');
 const fs = require('fs');
+const path = require('path');
 
-const readStream = fs.createReadStream('package.json');
+const log = path.join(__dirname, 'public', 'log.txt');
 
-let data;
-
-readStream
-  .setEncoding('utf-8')
-  .on('data', (chunk) => {
-    data += chunk;
+function writeResult (isCorrect) {
+  const logLine = `{isCorrect: ${isCorrect}}, \n`;
+  fs.appendFile(log, logLine, (error)=> {
+    if (error) throw Error(error)
   })
-  .on('end', () => {
-    console.log('end', data);
+}
+
+const MAX = 2;
+const MIN = 1;
+
+function guessDie() {
+  const die = Math.floor(Math.random() * MAX) + MIN;
+  console.log('Орел(1) или решка(2)');
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
   });
 
-const content = 'content \n';
-const writeStream = fs.createWriteStream('output.txt');
-writeStream.write(content, 'utf-8');
-writeStream.end();
+  function askUser() {
+    rl.question('Что выбираешь? Орел (1) или решку(2): ', (userInput) => {
+      const userNumber = parseInt(userInput);
 
-writeStream.on('finish', ()=> {
-  console.log('finish');
-});
+      function repeatYourAnswer() {
+        console.log('Выберите орел или решку!');
+        askUser();
+      }
 
-writeStream.on('close', ()=> {
-  console.log('close');
-})
+      if (isNaN(userNumber)) {
+        repeatYourAnswer();
+      } else {
+        if (userNumber === die) {
+          console.log(`Правильно ${die === 2 ? 'Решка': 'Орел'}`);
+          writeResult(true);
+          rl.close();
+        } else if (userNumber > MAX) {
+          repeatYourAnswer();
+        } else if (userNumber < MIN) {
+          repeatYourAnswer();
+        } else {
+          console.log('Вы ошиблись!');
+          writeResult(false);
+          rl.close();
+        }
+      }
+    });
+  }
+  askUser();
+}
 
-writeStream.on('error', ()=> {
-  console.error('error');
-})
+guessDie();
 
-let readStreamFirst = fs.createReadStream('package.json');
-let writeStreamSecond = fs.createWriteStream('output.txt');
-
-readStreamFirst.pipe(writeStreamSecond);
-
-
-// игра загадывает случайное число (1 или 2) и предлагает пользователю угадывать его, - это написано
-
-// в качестве аргументов программа принимает на вход имя файла для логирования результатов каждой партии,
-// принимает cmd --имя файла
-// генерирует лог: угадал - не угадал, 
-// {id: id, won: false}
-// записывает в конец файла дату и лог
