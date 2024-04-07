@@ -3,24 +3,54 @@
 const http = require('http');
 
 const myAPIKey = process.env.myAPIKey;
-const url = `http://data.fixer.io/api/latest?access_key=${myAPIKey}&symbols=USD,EUR,RUB`;
 
-http.get(url, (response)=> {
-  const {statusCode} = response;
-  console.log(statusCode);
-  if (statusCode !== 200) {
-    console.log('Error', statusCode);
-    return;
-  }
+const url = require('url');
+const {v4: uuid} = require('uuid');
 
-  response.setEncoding('utf-8');
+const database = {
+  operations: [
+    {id: uuid(), amount: 50},
+    {id: uuid(), amount: 150},
+  ]
+}
 
-  let rawData = '';
-  response.on('data', (chunk)=> {
-    rawData += chunk;
-  })
-  response.on('end', ()=> {
-    let parsedData = JSON.parse(rawData);
-    console.log(parsedData);
-  }).on('error', (error) => console.log(error));
-});
+const getAllOperationsComponent = (operations = []) => {
+  let tableRows = operations.map(({id, amount}, index) => {
+    return(`
+      <tr>
+        <th>${++index}</th>
+        <th>${amount}</th>
+        <td>
+          <a class="btn btn-sm brn-primary" href="/update?id=${id}">обновить</a>
+          <a class="btn btn-sm brn-danger" href="/delete?id=${id}">удалить</a>
+        </td>
+      </tr>
+    `)
+  }).join('');
+
+  return (`
+  <a class="btn btn-sm brn-primary" href="/create">Добавить запись</a>
+  <table class="table table-striped table-sm mt-3">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th>Сумма</th>
+        <th>Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${tableRows}
+    </tbody>
+  </table>
+  `)
+}
+
+
+const getFormCreateComponent = () => {
+  return (`
+    <form method="POST" action="/create">
+      <input></input>
+    </form>
+  `)
+
+}
