@@ -49,7 +49,8 @@ const getAllOperationsComponent = (operations = []) => {
 const getFormCreateComponent = () => {
   return (`
     <form method="POST" action="/create">
-      <input></input>
+      <input name="count" type="number" required />
+      <button class="btn btn-sm btn-success" type="submit">Создать</button>
     </form>
   `)
 
