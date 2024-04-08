@@ -53,5 +53,13 @@ const getFormCreateComponent = () => {
       <button class="btn btn-sm btn-success" type="submit">Создать</button>
     </form>
   `)
+}
 
+const getFormUpdateComponent = ({id, amount}) => {
+  return (`
+  <form method="POST" action="/update?id=${id}">
+    <input name="count" type="number" required value=${amount}/>
+    <button class="btn btn-sm btn-outline-success" type="submit">Сохранить</button>
+  </form>
+`)
 }
