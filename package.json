@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/zknone/backend-edu#readme",
   "dependencies": {
+    "uuid": "^9.0.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
