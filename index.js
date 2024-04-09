@@ -20,7 +20,15 @@ http.get(url, (res) => {
 
     res.setEncoding('utf-8');
     let rawData = '';
-    res.on('data', (chunk) => rawData += chunk).on('end', ()=> console.log(rawData)).on('error', (error) => console.error(error))
+    res
+        .on('data', (chunk) => rawData += chunk)
+        .on('end', ()=> {
+            const transformedData = JSON.parse(rawData);
+            const weather = transformedData.current.weather_descriptions[0];
+            console.log(`Weather in ${chosenCity} is ${weather}`);
+        
+        })
+        .on('error', (error) => console.error(error));
 })
 
 
