@@ -1,34 +1,109 @@
-const http = require('http');
-const { exactInterval, preferredLanguage, preferredUnits } = require('./config.js');
+const { v4: uuid } = require('uuid');
+const express = require('express');
 
-const yargs = require('yargs');
-const { hideBin} = require("yargs/helpers");
+class Book {
+    constructor(
+        title = "", 
+        desc = "", 
+        id = uuid(),
+        authors = "",
+        favorite = "",
+        fileCover = "",
+        fileName = ""
+        ) {
+        this.title = title;
+        this.desc = desc;
+        this.id = id;
+        this.authors = authors;
+        this.favorite = favorite;
+        this.fileCover = fileCover;
+        this.fileName = fileName;
+    }
+}
 
-const argv = yargs(hideBin(process.argv)).argv;
+const store = {
+    books: [
+        new Book(),
+        new Book(),
+        new Book(),
+        new Book(),
+    ],
+};
 
-const chosenCity = argv._[0];
-const weatherApiKey = process.env.WEATHER_API_KEY;
+const app = express();
+app.use(express.json());
 
-const url = `http://api.weatherstack.com/current?access_key=${weatherApiKey}&query=${chosenCity}&units=${preferredUnits}`;
-
-http.get(url, (res) => {
-    const {statusCode} = res;
-    if (statusCode !== 200) {
-        console.log('Status Code:', statusCode);
-        return;
-    } 
-
-    res.setEncoding('utf-8');
-    let rawData = '';
-    res
-        .on('data', (chunk) => rawData += chunk)
-        .on('end', ()=> {
-            const transformedData = JSON.parse(rawData);
-            const weather = transformedData.current.weather_descriptions[0];
-            console.log(`Weather in ${chosenCity} is ${weather}`);
-        
-        })
-        .on('error', (error) => console.error(error));
+app.post('/api/user/login', (req, res) => {
+    res.status(201);
+    res.json({ id: 1, mail: "test@mail.ru" });
 })
 
+app.get('/api/books', (req, res) => {
+    const {books} = store
+    res.json(books)
+})
 
+app.get('/api/books/:id', (req, res) => {
+    const {books} = store
+    const {id} = req.params
+    const idx = books.findIndex(el => el.id === id)
+
+    if( idx !== -1) {
+        res.json(books[idx])
+    } else {
+        res.status(404)
+        res.json('404 | страница не найдена')
+    }
+
+})
+
+app.post('/api/books/', (req, res) => {
+    const {books} = store;
+    const {title, desc, authors, favorite, fileCover, fileName} = req.body;
+
+    const newBook = new Book(title, desc, authors, favorite, fileCover, fileName);
+    books.push(newBook);
+
+    res.status(201);
+    res.json(newBook);
+})
+
+app.put('/api/books/:id', (req, res) => {
+    const {books} = store;
+    const {title, desc, authors, favorite, fileCover, fileName} = req.body;
+    const {id} = req.params;
+    const idx = books.findIndex(el => el.id === id);
+
+    if (idx !== -1){
+        books[idx] = {
+            ...books[idx],
+            title,
+            desc,
+            authors, 
+            favorite, 
+            fileCover, 
+            fileName
+        };
+        res.json(books[idx]);
+    } else {
+        res.status(404);
+        res.json('404 | страница не найдена');
+    }
+})
+
+app.delete('/api/books/:id', (req, res) => {
+    const {books} = store;
+    const {id} = req.params;
+    const idx = books.findIndex(el => el.id === id)
+     
+    if(idx !== -1){
+        books.splice(idx, 1)
+        res.json('Ok');
+    } else {
+        res.status(404)
+        res.json('404 | страница не найдена');
+    }
+})
+
+const PORT = process.env.PORT || 3000
+app.listen(PORT)
