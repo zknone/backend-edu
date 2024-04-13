@@ -1,6 +1,6 @@
 const { v4: uuid } = require('uuid');
 const express = require('express');
-const demoRouter = require('./routes/demo');
+const bookUploader = require('./routes/upload-book');
 
 class Book {
     constructor(
@@ -34,7 +34,28 @@ const store = {
 const app = express();
 app.use(express.json());
 
-app.use('/demo', demoRouter);
+app.use('/demo', bookUploader, (req, res) => {
+    const {id} = req.params;
+    const {books} = store;
+    const idx = books.findIndex(el => el.id === id);
+    
+    if (idx !== -1){
+        books[idx] = {
+            ...books[idx],
+            title,
+            desc,
+            authors, 
+            favorite, 
+            fileCover, 
+            fileName
+        };
+        res.json(books[idx]);
+    } else {
+        res.status(404);
+        res.json('404 | страница не найдена');
+    }
+
+});
 
 app.post('/api/user/login', (req, res) => {
     res.status(201);

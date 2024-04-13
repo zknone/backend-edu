@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const fileMulter = require('../middleware/file');
 
-router.post('/upload-img', 
-    fileMulter.single('cover-img'), 
+router.post('/upload-book', 
+    fileMulter.single('book'), 
     (req, res) => {
         if (req.file) {
             const {path} = req.file;
