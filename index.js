@@ -35,6 +35,48 @@ const store = {
 
 const app = express();
 app.use(express.json());
+app.use('public/', express.static(__dirname+'/public/'));
+
+app.post('/api/user/login', (req, res) => {
+    res.status(201);
+    res.json({ id: 1, mail: "test@mail.ru" });
+})
+
+app.get('/api/books', (req, res) => {
+    const {books} = store;
+    res.json(books);
+})
+
+app.get('/api/books/:id/download', (req, res) => {
+    const { books } = store;
+    const { id } = req.params;
+    const idx = books.findIndex(el => el.id === id);
+
+    if (idx !== -1) {
+        const path = books[idx].fileBook;
+
+        if (path) {
+            res.download(path, books[idx].fileName);
+        } else {
+            res.status(404).json('Файл не найден');
+        }
+    } else {
+        res.status(404).json('Книга не найдена');
+    }
+});
+
+app.get('/api/books/:id', (req, res) => {
+    const {books} = store;
+    const {id} = req.params;
+    const idx = books.findIndex(el => el.id === id);
+
+    if( idx !== -1) {
+        res.json(books[idx]);
+    } else {
+        res.status(404)
+        res.json('404 | страница не найдена');
+    }
+});
 
 app.use('/api/books/:id/', bookUploader, (req, res) => {
     const {id} = req.params;
@@ -54,44 +96,6 @@ app.use('/api/books/:id/', bookUploader, (req, res) => {
     }
 
 });
-
-app.post('/api/user/login', (req, res) => {
-    res.status(201);
-    res.json({ id: 1, mail: "test@mail.ru" });
-})
-
-app.get('/api/books', (req, res) => {
-    const {books} = store;
-    res.json(books);
-})
-
-app.get('/api/books/:id', (req, res) => {
-    const {books} = store;
-    const {id} = req.params;
-    const idx = books.findIndex(el => el.id === id);
-
-    if( idx !== -1) {
-        res.json(books[idx]);
-    } else {
-        res.status(404)
-        res.json('404 | страница не найдена');
-    }
-})
-
-app.get('/api/books/:id/download', (req, res) => {
-    const {books} = store;
-    const {id} = req.params;
-    const idx = books.findIndex(el => el.id === id);
-
-    if( idx !== -1) {
-        res.json(books[idx].fileBook);
-    } else {
-        res.status(404)
-        res.json('404 | страница не найдена')
-    }
-})
-
-//todo: сейчас возвращает весь json
 
 app.post('/api/books/', (req, res) => {
     const {books} = store;
