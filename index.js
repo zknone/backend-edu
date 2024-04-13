@@ -1,5 +1,6 @@
 const { v4: uuid } = require('uuid');
 const express = require('express');
+const demoRouter = require('./routes/demo');
 
 class Book {
     constructor(
@@ -32,6 +33,8 @@ const store = {
 
 const app = express();
 app.use(express.json());
+
+app.use('/demo', demoRouter);
 
 app.post('/api/user/login', (req, res) => {
     res.status(201);
