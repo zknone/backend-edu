@@ -10,7 +10,8 @@ class Book {
         authors = "",
         favorite = "",
         fileCover = "",
-        fileName = ""
+        fileName = "",
+        fileBook = ""
         ) {
         this.title = title;
         this.desc = desc;
@@ -19,6 +20,7 @@ class Book {
         this.favorite = favorite;
         this.fileCover = fileCover;
         this.fileName = fileName;
+        this.fileBook = fileBook;
     }
 }
 
@@ -34,21 +36,16 @@ const store = {
 const app = express();
 app.use(express.json());
 
-app.use('/demo', bookUploader, (req, res) => {
+app.use('/api/books/:id/', bookUploader, (req, res) => {
     const {id} = req.params;
     const {books} = store;
     const idx = books.findIndex(el => el.id === id);
-    
+
     if (idx !== -1){
-        books[idx] = {
-            ...books[idx],
-            title,
-            desc,
-            authors, 
-            favorite, 
-            fileCover, 
-            fileName
-        };
+        const { bookFilePath } = req;
+        if (bookFilePath) {
+            books[idx].fileBook = bookFilePath; 
+        }
         res.json(books[idx]);
     } else {
         res.status(404);

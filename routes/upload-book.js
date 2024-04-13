@@ -4,12 +4,12 @@ const fileMulter = require('../middleware/file');
 
 router.post('/upload-book', 
     fileMulter.single('book'), 
-    (req, res) => {
+    (req, res, next) => {
         if (req.file) {
-            const {path} = req.file;
-            res.json({path});
+            const { path } = req.file;
+            req.bookFilePath = path; // Сохраняем path в req для передачи в основной обработчик Express
         }
-        res.json();
+        next();
     }
 )
 
