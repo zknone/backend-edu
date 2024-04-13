@@ -43,6 +43,7 @@ app.use('/api/books/:id/', bookUploader, (req, res) => {
 
     if (idx !== -1){
         const { bookFilePath } = req;
+
         if (bookFilePath) {
             books[idx].fileBook = bookFilePath; 
         }
