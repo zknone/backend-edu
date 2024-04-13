@@ -89,8 +89,9 @@ app.get('/api/books/:id/download', (req, res) => {
         res.status(404)
         res.json('404 | страница не найдена')
     }
-
 })
+
+//todo: сейчас возвращает весь json
 
 app.post('/api/books/', (req, res) => {
     const {books} = store;

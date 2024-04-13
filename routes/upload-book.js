@@ -7,7 +7,7 @@ router.post('/upload-book',
     (req, res, next) => {
         if (req.file) {
             const { path } = req.file;
-            req.bookFilePath = path; // Сохраняем path в req для передачи в основной обработчик Express
+            req.bookFilePath = path;
         }
         next();
     }
