@@ -1,4 +1,5 @@
 const { v4: uuid } = require('uuid');
+let ejs = require('ejs');
 const express = require('express');
 const bookUploader = require('./routes/upload-book');
 
@@ -34,6 +35,8 @@ const store = {
 };
 
 const app = express();
+app.use(express.urlencoded());
+app.set("view engine", "ejs");
 app.use(express.json());
 app.use('public/', express.static(__dirname+'/public/'));
 
