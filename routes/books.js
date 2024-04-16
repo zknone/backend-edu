@@ -86,7 +86,6 @@ router.use('/upload/:id', bookUploader, (req, res) => {
         res.status(404);
         res.json('404 | страница не найдена');
     }
-
 });
 
 router.get('/create', (req, res) => {
@@ -107,14 +106,32 @@ router.post('/create', (req, res) => {
     res.json(newBook);
 })
 
+router.get('/update/:id', (req, res) => {
+    const {books} = store;
+    const {title, desc, authors, favorite, fileCover, fileName} = req.body;
+    const {id} = req.params;
+    const idx = books.findIndex(el => el.id === id);
+
+    if (idx === -1) {
+        res.redirect('/404');
+    } 
+
+    res.render("books/update", {
+        title: "Books | view",
+        books: books[idx],
+    });
+});
+
 router.put('/update/:id', (req, res) => {
     const {books} = store;
     const {title, desc, authors, favorite, fileCover, fileName} = req.body;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id);
 
-    if (idx !== -1){
-        books[idx] = {
+    if (idx == -1){
+        res.redirect('/404');
+    };
+    books[idx] = {
             ...books[idx],
             title,
             desc,
@@ -122,12 +139,8 @@ router.put('/update/:id', (req, res) => {
             favorite, 
             fileCover, 
             fileName
-        };
-        res.json(books[idx]);
-    } else {
-        res.status(404);
-        res.json('404 | страница не найдена');
-    }
+    };
+    res.redirect(`/books/${id}`);
 })
 
 router.delete('/delete/:id', (req, res) => {
