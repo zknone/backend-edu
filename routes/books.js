@@ -27,10 +27,26 @@ class Book {
 
 const store = {
     books: [
-        new Book(),
-        new Book(),
-        new Book(),
-        new Book(),
+        new Book(
+            title = "Новая жизнь", 
+            desc = "Книга о новой жизни",
+            authors = "Андрей Булгаков"
+            ),
+        new Book(
+            title = "Старая жизнь", 
+            desc = "Книга о старой жизни",
+            authors = "Андрей Булгаков"
+        ),
+        new Book(
+            title = "Вторая жизнь", 
+            desc = "Книга о второй жизни",
+            authors = "Андрей Булгаков"
+        ),
+        new Book(
+            title = "Загробная жизнь", 
+            desc = "Книга о загробной жизни",
+            authors = "Андрей Булгаков"
+        ),
     ],
 };
 
@@ -87,9 +103,9 @@ router.get('/:id', (req, res) => {
         res.redirect('/404');
     }
 
-    res.render("books/:id", {
+    res.render("books/view", {
         title: `Books | ${idx}`,
-        books: books[idx],
+        book: books[idx],
     });
 });
 
