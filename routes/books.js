@@ -147,16 +147,16 @@ router.put('/update/:id', (req, res) => {
     res.redirect(`/books/${id}`);
 })
 
-router.delete('/delete/:id', (req, res) => {
+router.post('/delete/:id', (req, res) => {
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id)
      
-    if(idx !== -1){
-        books.splice(idx, 1)
-        res.json('Ok');
-    } else {
-        res.status(404)
-        res.json('404 | страница не найдена');
+    if(idx == -1){
+
+        res.redirect('/404');
     }
+
+    books.splice(idx, 1);
+    res.redirect(`/books`);
 })
