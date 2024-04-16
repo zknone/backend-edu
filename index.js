@@ -1,4 +1,3 @@
-const { v4: uuid } = require('uuid');
 let ejs = require('ejs');
 const express = require('express');
 const indexRouter = require('./routes/index-route');
@@ -16,10 +15,10 @@ app.use('/', indexRouter, (req, res) => {
 });
 
 app.use('/books', booksRouter, (req, res) => {
-    
+
 })
 
-app.post('/api/user/login', (req, res) => {
+app.post('/user/login', (req, res) => {
     res.status(201);
     res.json({ id: 1, mail: "test@mail.ru" });
 })
