@@ -28,24 +28,29 @@ class Book {
 const store = {
     books: [
         new Book(
-            title = "Новая жизнь", 
-            desc = "Книга о новой жизни",
-            authors = "Андрей Булгаков"
+            "Новая жизнь", 
+            "Книга о новой жизни",
+            uuid(),
+            "Андрей Булгаков",
+
             ),
         new Book(
-            title = "Старая жизнь", 
-            desc = "Книга о старой жизни",
-            authors = "Андрей Булгаков"
+            "Старая жизнь", 
+            "Книга о старой жизни",
+            uuid(),
+            "Андрей Булгаков",
         ),
         new Book(
-            title = "Вторая жизнь", 
-            desc = "Книга о второй жизни",
-            authors = "Андрей Булгаков"
+            "Вторая жизнь", 
+            "Книга о второй жизни",
+            uuid(),
+            "Андрей Булгаков",
         ),
         new Book(
-            title = "Загробная жизнь", 
-            desc = "Книга о загробной жизни",
-            authors = "Андрей Булгаков"
+            "Загробная жизнь", 
+            "Книга о загробной жизни",
+            uuid(),
+            "Андрей Булгаков",
         ),
     ],
 };
@@ -94,6 +99,37 @@ router.use('/upload/:id', bookUploader, (req, res) => {
     }
 });
 
+router.get('/create', (req, res) => {
+    res.render("books/create", {
+        title: "New book",
+        book: {
+            title: '',
+            desc: '',
+            authors: '',
+        },
+    });
+});
+
+router.post('/create', (req, res) => {
+    const {books} = store;
+    const {title, desc, authors, favorite, fileCover, fileName} = req.body;
+
+    const newBook = new Book(
+        title, 
+        desc, 
+        uuid(), 
+        authors,
+        favorite, 
+        fileCover, 
+        fileName
+    );
+    
+    books.push(newBook);
+
+    res.status(201);
+    res.redirect('/books');
+});
+
 router.get('/:id', (req, res) => {
     const {books} = store;
     const {id} = req.params;
@@ -104,28 +140,10 @@ router.get('/:id', (req, res) => {
     }
 
     res.render("books/view", {
-        title: `Books | ${idx}`,
+        title: 'Book',
         book: books[idx],
     });
 });
-
-router.get('/create', (req, res) => {
-    res.render('books/create', {
-        title: "New book",
-        books: {},
-    });
-})
-
-router.post('/create', (req, res) => {
-    const {books} = store;
-    const {title, desc, authors, favorite, fileCover, fileName} = req.body;
-
-    const newBook = new Book(title, desc, authors, favorite, fileCover, fileName);
-    books.push(newBook);
-
-    res.status(201);
-    res.redirect('/books');
-})
 
 router.get('/update/:id', (req, res) => {
     const {books} = store;
@@ -138,11 +156,16 @@ router.get('/update/:id', (req, res) => {
 
     res.render("books/update", {
         title: "Books | view",
-        books: books[idx],
+        book:{
+            title: books[idx].title ?? '',
+            desc: books[idx].desc ?? ''
+        }
+        
+        ,
     });
 });
 
-router.put('/update/:id', (req, res) => {
+router.post('/update/:id', (req, res) => {
     const {books} = store;
     const {title, desc, authors, favorite, fileCover, fileName} = req.body;
     const {id} = req.params;
@@ -160,7 +183,7 @@ router.put('/update/:id', (req, res) => {
             fileCover, 
             fileName
     };
-    res.redirect(`/books/${id}`);
+    res.redirect(`/books`);
 })
 
 router.post('/delete/:id', (req, res) => {
