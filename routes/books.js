@@ -36,7 +36,10 @@ const store = {
 
 router.get('/', (req, res) => {
     const {books} = store;
-    res.json(books);
+    res.render('books/', {
+        title: "Books",
+        books: books,
+    });
 })
 
 router.get('/download/:id', (req, res) => {
@@ -62,12 +65,14 @@ router.get('/:id', (req, res) => {
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id);
 
-    if( idx !== -1) {
-        res.json(books[idx]);
-    } else {
-        res.status(404)
-        res.json('404 | страница не найдена');
+    if (idx === -1) {
+        res.redirect('/404');
     }
+
+    res.render("books/:id", {
+        title: `Books | ${idx}`,
+        books: books[idx],
+    });
 });
 
 router.use('/upload/:id', bookUploader, (req, res) => {
@@ -91,7 +96,7 @@ router.use('/upload/:id', bookUploader, (req, res) => {
 router.get('/create', (req, res) => {
     res.render('books/create', {
         title: "New book",
-        book: {},
+        books: {},
     });
 })
 
@@ -103,12 +108,11 @@ router.post('/create', (req, res) => {
     books.push(newBook);
 
     res.status(201);
-    res.json(newBook);
+    res.redirect('/books');
 })
 
 router.get('/update/:id', (req, res) => {
     const {books} = store;
-    const {title, desc, authors, favorite, fileCover, fileName} = req.body;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id);
 
