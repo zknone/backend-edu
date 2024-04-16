@@ -34,14 +34,12 @@ const store = {
     ],
 };
 
-router.get('/books', (req, res) => {
+router.get('/', (req, res) => {
     const {books} = store;
     res.json(books);
-
-    app.render();
 })
 
-router.get('/books/:id/download', (req, res) => {
+router.get('/download/:id', (req, res) => {
     const { books } = store;
     const { id } = req.params;
     const idx = books.findIndex(el => el.id === id);
@@ -59,7 +57,7 @@ router.get('/books/:id/download', (req, res) => {
     }
 });
 
-router.get('/books/:id', (req, res) => {
+router.get('/:id', (req, res) => {
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id);
@@ -72,7 +70,7 @@ router.get('/books/:id', (req, res) => {
     }
 });
 
-router.use('/books/:id/', bookUploader, (req, res) => {
+router.use('/upload/:id', bookUploader, (req, res) => {
     const {id} = req.params;
     const {books} = store;
     const idx = books.findIndex(el => el.id === id);
@@ -91,7 +89,14 @@ router.use('/books/:id/', bookUploader, (req, res) => {
 
 });
 
-router.post('/books/', (req, res) => {
+router.get('/create', (req, res) => {
+    res.render('books/create', {
+        title: "New book",
+        book: {},
+    });
+})
+
+router.post('/create', (req, res) => {
     const {books} = store;
     const {title, desc, authors, favorite, fileCover, fileName} = req.body;
 
@@ -102,7 +107,7 @@ router.post('/books/', (req, res) => {
     res.json(newBook);
 })
 
-router.put('/books/:id', (req, res) => {
+router.put('/update/:id', (req, res) => {
     const {books} = store;
     const {title, desc, authors, favorite, fileCover, fileName} = req.body;
     const {id} = req.params;
@@ -125,7 +130,7 @@ router.put('/books/:id', (req, res) => {
     }
 })
 
-router.delete('/books/:id', (req, res) => {
+router.delete('/delete/:id', (req, res) => {
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id)
