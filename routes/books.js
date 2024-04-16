@@ -1,4 +1,4 @@
-const bookUploader = require('./routes/upload-book');
+const bookUploader = require('./upload-book');
 const express = require('express');
 const router = express.Router();
 const { v4: uuid } = require('uuid');
@@ -60,21 +60,6 @@ router.get('/download/:id', (req, res) => {
     }
 });
 
-router.get('/:id', (req, res) => {
-    const {books} = store;
-    const {id} = req.params;
-    const idx = books.findIndex(el => el.id === id);
-
-    if (idx === -1) {
-        res.redirect('/404');
-    }
-
-    res.render("books/:id", {
-        title: `Books | ${idx}`,
-        books: books[idx],
-    });
-});
-
 router.use('/upload/:id', bookUploader, (req, res) => {
     const {id} = req.params;
     const {books} = store;
@@ -91,6 +76,21 @@ router.use('/upload/:id', bookUploader, (req, res) => {
         res.status(404);
         res.json('404 | страница не найдена');
     }
+});
+
+router.get('/:id', (req, res) => {
+    const {books} = store;
+    const {id} = req.params;
+    const idx = books.findIndex(el => el.id === id);
+
+    if (idx === -1) {
+        res.redirect('/404');
+    }
+
+    res.render("books/:id", {
+        title: `Books | ${idx}`,
+        books: books[idx],
+    });
 });
 
 router.get('/create', (req, res) => {
@@ -160,3 +160,5 @@ router.post('/delete/:id', (req, res) => {
     books.splice(idx, 1);
     res.redirect(`/books`);
 })
+
+module.exports = router;

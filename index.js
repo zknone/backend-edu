@@ -10,13 +10,8 @@ app.use(express.json());
 app.use('public/', express.static(__dirname+'/public/'));
 
 
-app.use('/', indexRouter, (req, res) => {
-    app.render();
-});
-
-app.use('/books', booksRouter, (req, res) => {
-
-})
+app.use('/', indexRouter);
+app.use('/books', booksRouter);
 
 app.post('/user/login', (req, res) => {
     res.status(201);
