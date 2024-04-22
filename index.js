@@ -78,23 +78,24 @@ app.get('/api/books/:id', (req, res) => {
     }
 });
 
-app.use('/api/books/:id/', bookUploader, (req, res) => {
-    const {id} = req.params;
-    const {books} = store;
+app.use('/api/books/:id/', bookUploader);
+
+app.post('/api/books/:id/', (req, res) => {
+    const { id } = req.params;
+    const { books } = store;
     const idx = books.findIndex(el => el.id === id);
 
     if (idx !== -1){
-        const { bookFilePath } = req;
-
-        if (bookFilePath) {
-            books[idx].fileBook = bookFilePath; 
+        // такое ощущение, что я вот здесь не получаю req.file
+        if (req.file) {
+            const { filename } = req.file;
+            books[idx].fileBook = filename; 
+            //// вот здесь не происходит запись в fileBook
         }
         res.json(books[idx]);
     } else {
-        res.status(404);
-        res.json('404 | страница не найдена');
+        res.status(404).json('404 | страница не найдена');
     }
-
 });
 
 app.post('/api/books/', (req, res) => {
