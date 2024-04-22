@@ -1,6 +1,7 @@
 const { v4: uuid } = require('uuid');
 const express = require('express');
 const fileMulter = require('./middleware/file');
+const uploadBookRouter = require('./routes/upload-book');
 
 class Book {
     constructor(
@@ -34,6 +35,7 @@ const store = {
 };
 
 const app = express();
+app.set('store', store);
 app.use(express.json());
 app.use('/public/', express.static(__dirname+'/public/'));
 
@@ -78,23 +80,23 @@ app.get('/api/books/:id', (req, res) => {
     }
 });
 
-app.use('/api/books/:id/upload-book', fileMulter.single('book'));
+app.use('/api/books/upload-book', uploadBookRouter);
 
-app.post('/api/books/:id/upload-book', (req, res) => {
-    const { id } = req.params;
-    const { books } = store;
-    const idx = books.findIndex(el => el.id === id);
+// app.post('/api/books/:id/upload-book', (req, res) => {
+//     const { id } = req.params;
+//     const { books } = store;
+//     const idx = books.findIndex(el => el.id === id);
 
-    if (idx !== -1){
-        if (req.file) {
-            const { filename } = req.file;
-            books[idx].fileBook = filename; 
-        }
-        res.json(books[idx]);
-    } else {
-        res.status(404).json('404 | страница не найдена');
-    }
-});
+//     if (idx !== -1){
+//         if (req.file) {
+//             const { filename } = req.file;
+//             books[idx].fileBook = filename; 
+//         }
+//         res.json(books[idx]);
+//     } else {
+//         res.status(404).json('404 | страница не найдена');
+//     }
+// });
 
 app.post('/api/books/', (req, res) => {
     const {books} = store;
