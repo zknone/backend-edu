@@ -1,6 +1,6 @@
 const { v4: uuid } = require('uuid');
 const express = require('express');
-const bookUploader = require('./routes/upload-book');
+const fileMulter = require('./middleware/file');
 
 class Book {
     constructor(
@@ -35,7 +35,7 @@ const store = {
 
 const app = express();
 app.use(express.json());
-app.use('public/', express.static(__dirname+'/public/'));
+app.use('/public/', express.static(__dirname+'/public/'));
 
 app.post('/api/user/login', (req, res) => {
     res.status(201);
@@ -78,19 +78,17 @@ app.get('/api/books/:id', (req, res) => {
     }
 });
 
-app.use('/api/books/:id/', bookUploader);
+app.use('/api/books/:id/', fileMulter.single('book'));
 
-app.post('/api/books/:id/', (req, res) => {
+app.post('/api/books/:id/upload-book', (req, res) => {
     const { id } = req.params;
     const { books } = store;
     const idx = books.findIndex(el => el.id === id);
 
     if (idx !== -1){
-        // такое ощущение, что я вот здесь не получаю req.file
         if (req.file) {
             const { filename } = req.file;
             books[idx].fileBook = filename; 
-            //// вот здесь не происходит запись в fileBook
         }
         res.json(books[idx]);
     } else {
