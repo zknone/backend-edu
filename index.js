@@ -78,7 +78,7 @@ app.get('/api/books/:id', (req, res) => {
     }
 });
 
-app.use('/api/books/:id/', fileMulter.single('book'));
+app.use('/api/books/:id/upload-book', fileMulter.single('book'));
 
 app.post('/api/books/:id/upload-book', (req, res) => {
     const { id } = req.params;
