@@ -2,6 +2,29 @@ let ejs = require('ejs');
 const express = require('express');
 const indexRouter = require('./routes/index-route');
 const booksRouter = require('./routes/books');
+const { v4: uuid } = require('uuid');
+
+class Book {
+    constructor(
+        title = "", 
+        desc = "", 
+        id = uuid(),
+        authors = "",
+        favorite = "",
+        fileCover = "",
+        fileName = "",
+        fileBook = ""
+        ) {
+        this.title = title;
+        this.desc = desc;
+        this.id = id;
+        this.authors = authors;
+        this.favorite = favorite;
+        this.fileCover = fileCover;
+        this.fileName = fileName;
+        this.fileBook = fileBook;
+    }
+}
 
 const app = express();
 

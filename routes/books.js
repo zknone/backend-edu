@@ -1,29 +1,7 @@
-const bookUploader = require('./upload-book');
+const uploadBookRouter = require('./upload-book');
 const express = require('express');
 const router = express.Router();
-const { v4: uuid } = require('uuid');
 
-class Book {
-    constructor(
-        title = "", 
-        desc = "", 
-        id = uuid(),
-        authors = "",
-        favorite = "",
-        fileCover = "",
-        fileName = "",
-        fileBook = ""
-        ) {
-        this.title = title;
-        this.desc = desc;
-        this.id = id;
-        this.authors = authors;
-        this.favorite = favorite;
-        this.fileCover = fileCover;
-        this.fileName = fileName;
-        this.fileBook = fileBook;
-    }
-}
 
 router.get('/', (req, res) => {
     const {books} = store;
