@@ -81,23 +81,7 @@ router.get('/download/:id', (req, res) => {
     }
 });
 
-router.use('/upload/:id', bookUploader, (req, res) => {
-    const {id} = req.params;
-    const {books} = store;
-    const idx = books.findIndex(el => el.id === id);
-
-    if (idx !== -1){
-        const { bookFilePath } = req;
-
-        if (bookFilePath) {
-            books[idx].fileBook = bookFilePath; 
-        }
-        res.json(books[idx]);
-    } else {
-        res.status(404);
-        res.json('404 | страница не найдена');
-    }
-});
+app.use('/api/books/upload-book', uploadBookRouter);
 
 router.get('/create', (req, res) => {
     res.render("books/create", {
