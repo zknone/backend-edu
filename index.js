@@ -4,6 +4,38 @@ const indexRouter = require('./routes/index-route');
 const booksRouter = require('./routes/books');
 
 const app = express();
+
+const store = {
+    books: [
+        new Book(
+            "Новая жизнь", 
+            "Книга о новой жизни",
+            uuid(),
+            "Андрей Булгаков",
+
+            ),
+        new Book(
+            "Старая жизнь", 
+            "Книга о старой жизни",
+            uuid(),
+            "Андрей Булгаков",
+        ),
+        new Book(
+            "Вторая жизнь", 
+            "Книга о второй жизни",
+            uuid(),
+            "Андрей Булгаков",
+        ),
+        new Book(
+            "Загробная жизнь", 
+            "Книга о загробной жизни",
+            uuid(),
+            "Андрей Булгаков",
+        ),
+    ],
+};
+
+app.set('store', store);
 app.use(express.urlencoded());
 app.set("view engine", "ejs");
 app.use(express.json());
