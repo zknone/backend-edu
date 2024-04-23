@@ -2,8 +2,8 @@ const uploadBookRouter = require('./upload-book');
 const express = require('express');
 const router = express.Router();
 
-
 router.get('/', (req, res) => {
+    const store = req.app.get('store');
     const {books} = store;
     res.render('books/', {
         title: "Books",
@@ -12,6 +12,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/download/:id', (req, res) => {
+    const store = req.app.get('store');
     const { books } = store;
     const { id } = req.params;
     const idx = books.findIndex(el => el.id === id);
@@ -43,6 +44,7 @@ router.get('/create', (req, res) => {
 });
 
 router.post('/create', (req, res) => {
+    const store = req.app.get('store');
     const {books} = store;
     const {title, desc, authors, favorite, fileCover, fileName} = req.body;
 
@@ -63,6 +65,7 @@ router.post('/create', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
+    const store = req.app.get('store');
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id);
@@ -78,6 +81,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.get('/update/:id', (req, res) => {
+    const store = req.app.get('store');
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id);
@@ -98,6 +102,7 @@ router.get('/update/:id', (req, res) => {
 });
 
 router.post('/update/:id', (req, res) => {
+    const store = req.app.get('store');
     const {books} = store;
     const {title, desc, authors, favorite, fileCover, fileName} = req.body;
     const {id} = req.params;
@@ -119,6 +124,7 @@ router.post('/update/:id', (req, res) => {
 })
 
 router.post('/delete/:id', (req, res) => {
+    const store = req.app.get('store');
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id)
