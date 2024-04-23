@@ -51,7 +51,7 @@ router.get('/download/:id', (req, res) => {
     }
 });
 
-app.use('/api/books/upload-book', uploadBookRouter);
+router.use('/api/books/upload-book', uploadBookRouter);
 
 router.get('/create', (req, res) => {
     res.render("books/create", {
