@@ -64,9 +64,8 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use('public/', express.static(__dirname+'/public/'));
 
-
-app.use('/', indexRouter);
 app.use('/books', booksRouter);
+app.use('/', indexRouter);
 
 app.post('/user/login', (req, res) => {
     res.status(201);
