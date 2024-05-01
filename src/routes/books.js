@@ -5,7 +5,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
     const store = req.app.get('store');
     const {books} = store;
-    res.render('books/', {
+    res.render('books', {
         title: "Books",
         books: books,
     });
