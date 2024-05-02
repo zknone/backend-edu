@@ -1,6 +1,30 @@
 const uploadBookRouter = require('./upload-book');
 const express = require('express');
 const router = express.Router();
+const http = require('http');
+
+function requestToCounter(path, callback) {
+    const options = {
+        hostname: 'counter',
+        port: 3003, 
+        path: path,
+        method: 'GET'
+    };
+
+    const req = http.request(options, (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+            data += chunk;
+        });
+        res.on('end', () => {
+            callback(null, JSON.parse(data));
+        });
+    });
+    req.on('error', (error) => {
+        callback(error, null);
+    });
+    req.end();
+}
 
 router.get('/', (req, res) => {
     const store = req.app.get('store');

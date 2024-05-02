@@ -17,14 +17,22 @@ app.get("/counter/:bookId", async(req, res) => {
     const {bookId} = req.params;
 
     try {
-        const cnt = await client.incr(bookId);
+        const cnt = await client.get(bookId);
         res.json({message: bookId, cnt});
     } catch (e) {
         res.json({errorcode: 500, errormessage: `Redis error: ${e}`})
     }
 })
 
-app.post("/counter/:bookId/incr", (req, res) => {
+app.post("/counter/:bookId/incr", async (req, res) => {
+    const {bookId} = req.params;
+    
+    try {
+        const cnt = await client.incr(bookId);
+        res.json({message: bookId, cnt});
+    } catch (e) {
+        res.json({errorcode: 500, errormessage: `Redis error: ${e}`})
+    }
 })
 
 app.listen(PORT, ()=> {
