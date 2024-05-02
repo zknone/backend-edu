@@ -3,12 +3,35 @@ const express = require('express');
 const router = express.Router();
 const http = require('http');
 
-function requestToCounter(path, callback) {
+function getCounter(path, callback) {
     const options = {
         hostname: 'counter',
         port: 3003, 
         path: path,
         method: 'GET'
+    };
+
+    const req = http.request(options, (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+            data += chunk;
+        });
+        res.on('end', () => {
+            callback(null, JSON.parse(data));
+        });
+    });
+    req.on('error', (error) => {
+        callback(error, null);
+    });
+    req.end();
+}
+
+function incrCounter (path, callback) {
+    const options = {
+        hostname: 'counter',
+        port: 3003, 
+        path: path,
+        method: 'POST'
     };
 
     const req = http.request(options, (res) => {
@@ -98,10 +121,26 @@ router.get('/:id', (req, res) => {
         res.redirect('/404');
     }
 
-    res.render("books/view", {
-        title: 'Book',
-        book: books[idx],
-    });
+    incrCounter(`/counter/${id}/incr`, (error) => {
+        if (error) {
+            console.error('Error getting counter:', error);
+            res.redirect('/404');
+        } else {
+            getCounter(`/counter/${id}`, (error, data) => {
+                if (error) {
+                    console.error('Error getting counter:', error);
+                    res.redirect('/404');
+                } else {
+                    const counter = data?.cnt ?? 0;
+                    res.render("books/view", {
+                        title: 'Book',
+                        book: books[idx],
+                        counter: counter
+                    });
+                }
+            });
+        }
+    })
 });
 
 router.get('/update/:id', (req, res) => {
