@@ -13,6 +13,7 @@ services:
       - REDIS_URL=redis://storage
     ports:
       - 8080:3003 
+      - 3002:3002
     command: npm run dev
     depends_on:
       - storage
@@ -23,6 +24,7 @@ services:
       - ./:/app/
     environment:
       - PORT=3002
+      - COUNTER_PORT=3003
     ports:
       - 80:3002
     command: npm run server

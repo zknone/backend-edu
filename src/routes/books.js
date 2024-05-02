@@ -6,7 +6,7 @@ const http = require('http');
 function getCounter(path, callback) {
     const options = {
         hostname: 'counter',
-        port: 3003, 
+        port: process.env.COUNTER_PORT || 3000, 
         path: path,
         method: 'GET'
     };
@@ -29,7 +29,7 @@ function getCounter(path, callback) {
 function incrCounter (path, callback) {
     const options = {
         hostname: 'counter',
-        port: 3003, 
+        port: process.env.COUNTER_PORT || 3000, 
         path: path,
         method: 'POST'
     };
