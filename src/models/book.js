@@ -1,5 +1,4 @@
 const {Schema, model} = require('mongoose');
-const { boolean } = require('yargs');
 
 const bookSchema = new Schema({
     id: {
