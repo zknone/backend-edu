@@ -27,7 +27,7 @@ services:
       - COUNTER_PORT=3003
     ports:
       - 80:3002
-    command: npm run server
+    command: npm run dev
     depends_on:
       - counter
   mongo:

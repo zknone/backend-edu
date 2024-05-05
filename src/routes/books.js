@@ -2,6 +2,62 @@ const uploadBookRouter = require('./upload-book');
 const express = require('express');
 const router = express.Router();
 const http = require('http');
+const { v4: uuid } = require('uuid');
+
+const BookItem = require('../models/book');
+
+class Book {
+    constructor(
+        title = "", 
+        desc = "", 
+        id = uuid(),
+        authors = "",
+        favorite = "",
+        fileCover = "",
+        fileName = "",
+        fileBook = ""
+        ) {
+        this.title = title;
+        this.desc = desc;
+        this.id = id;
+        this.authors = authors;
+        this.favorite = favorite;
+        this.fileCover = fileCover;
+        this.fileName = fileName;
+        this.fileBook = fileBook;
+    }
+}
+
+const store = {
+    books: [
+        new Book(
+            "Новая жизнь", 
+            "Книга о новой жизни",
+            uuid(),
+            "Андрей Булгаков",
+
+            ),
+        new Book(
+            "Старая жизнь", 
+            "Книга о старой жизни",
+            uuid(),
+            "Андрей Булгаков",
+        ),
+        new Book(
+            "Вторая жизнь", 
+            "Книга о второй жизни",
+            uuid(),
+            "Андрей Булгаков",
+        ),
+        new Book(
+            "Загробная жизнь", 
+            "Книга о загробной жизни",
+            uuid(),
+            "Андрей Булгаков",
+        ),
+    ],
+};
+
 
 function getCounter(path, callback) {
     const options = {
@@ -50,7 +106,7 @@ function incrCounter (path, callback) {
 }
 
 router.get('/', (req, res) => {
-    const store = req.app.get('store');
+    // const store = req.app.get('store');
     const {books} = store;
     res.render('books', {
         title: "Books",
@@ -59,7 +115,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/download/:id', (req, res) => {
-    const store = req.app.get('store');
+    // const store = req.app.get('store');
     const { books } = store;
     const { id } = req.params;
     const idx = books.findIndex(el => el.id === id);
@@ -91,7 +147,7 @@ router.get('/create', (req, res) => {
 });
 
 router.post('/create', (req, res) => {
-    const store = req.app.get('store');
+    // const store = req.app.get('store');
     const {books} = store;
     const {title, desc, authors, favorite, fileCover, fileName} = req.body;
 
@@ -112,7 +168,7 @@ router.post('/create', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    const store = req.app.get('store');
+    // const store = req.app.get('store');
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id);
@@ -144,7 +200,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.get('/update/:id', (req, res) => {
-    const store = req.app.get('store');
+    // const store = req.app.get('store');
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id);
@@ -165,7 +221,7 @@ router.get('/update/:id', (req, res) => {
 });
 
 router.post('/update/:id', (req, res) => {
-    const store = req.app.get('store');
+    // const store = req.app.get('store');
     const {books} = store;
     const {title, desc, authors, favorite, fileCover, fileName} = req.body;
     const {id} = req.params;
@@ -187,7 +243,7 @@ router.post('/update/:id', (req, res) => {
 })
 
 router.post('/delete/:id', (req, res) => {
-    const store = req.app.get('store');
+    // const store = req.app.get('store');
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id)
