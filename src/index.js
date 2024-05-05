@@ -3,7 +3,6 @@ const express = require('express');
 const indexRouter = require('./routes/index-route');
 const path = require('path');
 const booksRouter = require('./routes/books');
-const { v4: uuid } = require('uuid');
 const mongoose = require('mongoose');
 
 const app = express();
