@@ -26,7 +26,7 @@ const UrlDB = process.env.URL_DB;
 
 async function start(PORT, urlDb) {
     try{
-        await mongoose.connect(urlDb);
+        await mongoose.connect(urlDb, { dbName: 'books' });
         app.listen(PORT, () => {
             console.log(`=== start server PORT ${PORT} ===`);
         })

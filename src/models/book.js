@@ -1,10 +1,6 @@
 const {Schema, model} = require('mongoose');
 
 const bookSchema = new Schema({
-    id: {
-        type: String,
-        required: true,
-    },
     title: {
         type: String,
         required: true,
@@ -15,7 +11,7 @@ const bookSchema = new Schema({
     },
     authors: {
         type: String,
-        required: true,
+        required: false,
     },
     favorite: {
         type: String,

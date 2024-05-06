@@ -6,59 +6,6 @@ const { v4: uuid } = require('uuid');
 const mongoose = require('mongoose');
 const BookItem = require('../models/book');
 
-class Book {
-    constructor(
-        title = "", 
-        desc = "", 
-        id = uuid(),
-        authors = "",
-        favorite = "",
-        fileCover = "",
-        fileName = "",
-        fileBook = ""
-        ) {
-        this.title = title;
-        this.desc = desc;
-        this.id = id;
-        this.authors = authors;
-        this.favorite = favorite;
-        this.fileCover = fileCover;
-        this.fileName = fileName;
-        this.fileBook = fileBook;
-    }
-}
-
-const store = {
-    books: [
-        new Book(
-            "Новая жизнь", 
-            "Книга о новой жизни",
-            uuid(),
-            "Андрей Булгаков",
-
-            ),
-        new Book(
-            "Старая жизнь", 
-            "Книга о старой жизни",
-            uuid(),
-            "Андрей Булгаков",
-        ),
-        new Book(
-            "Вторая жизнь", 
-            "Книга о второй жизни",
-            uuid(),
-            "Андрей Булгаков",
-        ),
-        new Book(
-            "Загробная жизнь", 
-            "Книга о загробной жизни",
-            uuid(),
-            "Андрей Булгаков",
-        ),
-    ],
-};
-
-
 function getCounter(path, callback) {
     const options = {
         hostname: 'counter',
@@ -105,36 +52,24 @@ function incrCounter (path, callback) {
     req.end();
 }
 
-router.get('/', (req, res) => {
-    // const store = req.app.get('store');
-    const {books} = store;
-    res.render('books', {
-        title: "Books",
-        books: books,
-    });
+router.get('/', async (req, res) => {
+    try {
+        const books = await BookItem.find().select('-__v');
+        res.render('books', {
+            title: "Books",
+            books: books,
+        });
+
+    } catch (e) {
+        res.status(500).json(e);
+    }
 })
 
 router.get('/download/:id', (req, res) => {
-    // const store = req.app.get('store');
-    const { books } = store;
-    const { id } = req.params;
-    const idx = books.findIndex(el => el.id === id);
-
-    if (idx !== -1) {
-        const path = books[idx].fileBook;
-
-        if (path) {
-            res.download(path, books[idx].fileName);
-        } else {
-            res.status(404).json('Файл не найден');
-        }
-    } else {
-        res.status(404).json('Книга не найдена');
-    }
+    // res.download(path, book.fileName);
 });
 
 router.use('/api/books/upload-book', uploadBookRouter);
-
 router.get('/create', (req, res) => {
     res.render("books/create", {
         title: "New book",
@@ -146,114 +81,112 @@ router.get('/create', (req, res) => {
     });
 });
 
-router.post('/create', (req, res) => {
-    // const store = req.app.get('store');
-    const {books} = store;
-    const {title, desc, authors, favorite, fileCover, fileName} = req.body;
+router.post('/create', async (req, res) => {
+    const { title, description, authors } = req.body;
+    const newBook = new BookItem({
+        title,
+        description,
+        authors
+    });
 
-    const newBook = new Book(
-        title, 
-        desc, 
-        uuid(), 
-        authors,
-        favorite, 
-        fileCover, 
-        fileName
-    );
-    
-    books.push(newBook);
-
-    res.status(201);
-    res.redirect('/books');
-});
-
-router.get('/:id', (req, res) => {
-    // const store = req.app.get('store');
-    const {books} = store;
-    const {id} = req.params;
-    const idx = books.findIndex(el => el.id === id);
-
-    if (idx === -1) {
+    try {
+        await newBook.save();
+        res.redirect(`/books`);
+    } catch (error) {
+        console.error('Error:', error);
         res.redirect('/404');
     }
-
-    incrCounter(`/counter/${id}/incr`, (error) => {
-        if (error) {
-            console.error('Error getting counter:', error);
-            res.redirect('/404');
-        } else {
-            getCounter(`/counter/${id}`, (error, data) => {
-                if (error) {
-                    console.error('Error getting counter:', error);
-                    res.redirect('/404');
-                } else {
-                    const counter = data?.cnt ?? 0;
-                    res.render("books/view", {
-                        title: 'Book',
-                        book: books[idx],
-                        counter: counter
-                    });
-                }
-            });
-        }
-    })
 });
 
-router.get('/update/:id', (req, res) => {
-    // const store = req.app.get('store');
-    const {books} = store;
+router.get('/:id', async (req, res) => {
     const {id} = req.params;
-    const idx = books.findIndex(el => el.id === id);
+    try {
+        const book = await BookItem.findById(id);
 
-    if (idx === -1) {
-        res.redirect('/404');
-    } 
-
-    res.render("books/update", {
-        title: "Books | view",
-        book:{
-            title: books[idx].title ?? '',
-            desc: books[idx].desc ?? ''
+        if (!book) {
+            res.redirect('/404');
         }
         
-        ,
-    });
-});
-
-router.post('/update/:id', (req, res) => {
-    // const store = req.app.get('store');
-    const {books} = store;
-    const {title, desc, authors, favorite, fileCover, fileName} = req.body;
-    const {id} = req.params;
-    const idx = books.findIndex(el => el.id === id);
-
-    if (idx == -1){
-        res.redirect('/404');
-    };
-    books[idx] = {
-            ...books[idx],
-            title,
-            desc,
-            authors, 
-            favorite, 
-            fileCover, 
-            fileName
-    };
-    res.redirect(`/books`);
-});
-
-router.post('/delete/:id', (req, res) => {
-    const {books} = store;
-    const {id} = req.params;
-    const idx = books.findIndex(el => el.id === id)
-     
-    if(idx == -1){
-
+        incrCounter(`/counter/${id}/incr`, (error) => {
+            if (error) {
+                console.error('Error getting counter:', error);
+                res.redirect('/404');
+            } else {
+                getCounter(`/counter/${id}`, (error, data) => {
+                    if (error) {
+                        console.error('Error getting counter:', error);
+                        res.redirect('/404');
+                    } else {
+                        const counter = data?.cnt ?? 0;
+                        res.render("books/view", {
+                            title: 'Book',
+                            book: book,
+                            counter: counter
+                        });
+                    }
+                });
+            }
+        })
+    } catch (error) {
+        console.error('Error:', error);
         res.redirect('/404');
     }
+});
 
-    books.splice(idx, 1);
-    res.redirect(`/books`);
+router.get('/update/:id', async (req, res) => {
+    const {id} = req.params;
+
+    try {
+        const book = await BookItem.findById(id);
+
+        if (!book) {
+            res.redirect('/404');
+        }
+        res.render("books/update", {
+            title: "Books | view",
+            book:{
+                title: book.title ?? '',
+                desc: book.description ?? ''
+            }
+        });
+    
+    } catch (error) {
+        console.error('Error:', error);
+        res.redirect('/404');
+    }
+});
+
+router.post('/update/:id', async (req, res) => {
+    const {title, description, authors } = req.body;
+    const {id} = req.params;
+
+    try {
+        await BookItem.findByIdAndUpdate(id, {
+            title,
+            description,
+            authors
+        });
+        res.redirect(`/books`);
+    
+    } catch (error) {
+        console.error('Error:', error);
+        res.redirect(`/books/${id}`);
+    }
+});
+
+router.post('/delete/:id', async(req, res) => {
+    const {id} = req.params;
+
+    try {
+        const book = await BookItem.findById(id);
+
+        await BookItem.deleteOne(book);
+        res.redirect(`/books`);
+    
+    } catch (error) {
+        console.error('Error:', error);
+        res.redirect(`/books/${id}`);
+    }
 });
 
 module.exports = router;
