@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const http = require('http');
 const { v4: uuid } = require('uuid');
-
+const mongoose = require('mongoose');
 const BookItem = require('../models/book');
 
 class Book {
@@ -240,10 +240,9 @@ router.post('/update/:id', (req, res) => {
             fileName
     };
     res.redirect(`/books`);
-})
+});
 
 router.post('/delete/:id', (req, res) => {
-    // const store = req.app.get('store');
     const {books} = store;
     const {id} = req.params;
     const idx = books.findIndex(el => el.id === id)
@@ -255,6 +254,6 @@ router.post('/delete/:id', (req, res) => {
 
     books.splice(idx, 1);
     res.redirect(`/books`);
-})
+});
 
 module.exports = router;

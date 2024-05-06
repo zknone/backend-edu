@@ -25,6 +25,7 @@ services:
     environment:
       - PORT=3002
       - COUNTER_PORT=3003
+      - URL_DB=mongodb://mongo:27017/test
     ports:
       - 80:3002
     command: npm run dev

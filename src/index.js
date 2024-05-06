@@ -22,7 +22,17 @@ app.post('/user/login', (req, res) => {
 })
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`=== start server PORT ${PORT} ===`);
-    console.log('Started!')
-});
+const UrlDB = process.env.URL_DB;
+
+async function start(PORT, urlDb) {
+    try{
+        await mongoose.connect(urlDb);
+        app.listen(PORT, () => {
+            console.log(`=== start server PORT ${PORT} ===`);
+        })
+    } catch (e){
+        console.log(e);
+    }
+}
+
+start(PORT, UrlDB);
