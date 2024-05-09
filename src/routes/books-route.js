@@ -2,8 +2,6 @@ const uploadBookRouter = require('./upload-book');
 const express = require('express');
 const router = express.Router();
 const http = require('http');
-const { v4: uuid } = require('uuid');
-const mongoose = require('mongoose');
 const BookItem = require('../models/book');
 
 function getCounter(path, callback) {
@@ -69,7 +67,8 @@ router.get('/download/:id', (req, res) => {
     // res.download(path, book.fileName);
 });
 
-router.use('/api/books/upload-book', uploadBookRouter);
+router.use('/upload-book', uploadBookRouter);
+
 router.get('/create', (req, res) => {
     res.render("books/create", {
         title: "New book",
