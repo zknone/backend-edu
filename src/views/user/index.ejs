@@ -4,8 +4,14 @@
 <div class="jumbotron jumbotron-fluid">
     <div class="container">
         <h1 class="display-4"><%= title %></h1>
-        <p>Name: </p>
-        <a>Logout</>
+
+        <% if (!user) { %>
+            <p>Главная</p> 
+            <p>Пожалуйста, <a href="/login"> авторизуйтесь </a></p>
+        <% } else { %>
+            <p>Привет, <%= user.username %>. </p>
+            <p>Перейти в <a href="/profile">профиль</a>.</p>
+        <% } %>
     </div>
 </div>
 

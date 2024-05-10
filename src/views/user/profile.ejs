@@ -1,0 +1,19 @@
+<%- include('../port/layout-start', {title: title}) %>
+<%- include('../port/menu') %>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4"><%= title %></h1>
+    <p>
+        <b>ID:</b>         <%= user.id %><br />
+        <b>Username:</b>   <%= user.username %><br />
+        <b>Name:</b>       <%= user.displayName %><br />
+        <% if (user.emails) { %>
+            <b>Email:</b>  <%= user.emails[0].value %><br />
+        <% } %>
+    </p>
+    <a href="/logout">Выйти</a>
+    </div>
+</div>
+
+<%- include('../port/layout-end') %> 
