@@ -2,7 +2,7 @@ const uploadBookRouter = require('./upload-book');
 const express = require('express');
 const router = express.Router();
 const http = require('http');
-const BookItem = require('../models/book');
+const BookModel = require('../models/book');
 
 function getCounter(path, callback) {
     const options = {
@@ -52,7 +52,7 @@ function incrCounter (path, callback) {
 
 router.get('/', async (req, res) => {
     try {
-        const books = await BookItem.find().select('-__v');
+        const books = await BookModel.find().select('-__v');
         res.render('books', {
             title: "Books",
             books: books,
@@ -82,7 +82,7 @@ router.get('/create', (req, res) => {
 
 router.post('/create', async (req, res) => {
     const { title, description, authors } = req.body;
-    const newBook = new BookItem({
+    const newBook = new BookModel({
         title,
         description,
         authors
@@ -100,7 +100,7 @@ router.post('/create', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const {id} = req.params;
     try {
-        const book = await BookItem.findById(id);
+        const book = await BookModel.findById(id);
 
         if (!book) {
             res.redirect('/404');
@@ -136,7 +136,7 @@ router.get('/update/:id', async (req, res) => {
     const {id} = req.params;
 
     try {
-        const book = await BookItem.findById(id);
+        const book = await BookModel.findById(id);
 
         if (!book) {
             res.redirect('/404');
@@ -160,7 +160,7 @@ router.post('/update/:id', async (req, res) => {
     const {id} = req.params;
 
     try {
-        await BookItem.findByIdAndUpdate(id, {
+        await BookModel.findByIdAndUpdate(id, {
             title,
             description,
             authors
@@ -177,9 +177,9 @@ router.post('/delete/:id', async(req, res) => {
     const {id} = req.params;
 
     try {
-        const book = await BookItem.findById(id);
+        const book = await BookModel.findById(id);
 
-        await BookItem.deleteOne(book);
+        await BookModel.deleteOne(book);
         res.redirect(`/books`);
     
     } catch (error) {
