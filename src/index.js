@@ -4,12 +4,12 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
-const db = require('./db');
 const UserModel = require('./models/user');
 
 const indexRouter = require('./routes/index-route');
 const booksRouter = require('./routes/books-route');
 const userRouter = require('./routes/user-route');
+const user = require('./models/user');
 
 const app = express();
 
@@ -28,6 +28,7 @@ passport.deserializeUser( (id, cb) => {
     cb(null, user)
   })
 });
+/// переписать
 
 app.use(express.urlencoded());
 app.use(session({ secret: 'SECRET'}));
@@ -50,21 +51,25 @@ async function start(PORT, urlDb) {
     try{
         await mongoose.connect(urlDb, { dbName: 'books' });
         const users = await UserModel.find().select('-__v');
+
+        console.log(users);
+
         const verify = ( username, password, done) => {
-            db.users.findByUsername(users, username, (err, user) => {
-                if (err) {
-                    console.log(err);
-                    return done(err)
+            users.map(user => {
+                if (users.length === 0) {
+                    console.log('User null');
+                    return done(null, user);
+                };
+                
+                if (user.username != username) {
+                    console.log('Undefined user');
+                    return done(null, user);
+                } 
+                
+                if (user.password !== password ) {
+                    return done (null, false);
                 }
-                if (!user) { 
-                    console.log('no users found')
-                    return done(null, false)
-                }
-          
-                if( !db.users.verifyPassword(user, password)) {
-                    return done(null, false)
-                }
-                return done(null, user)
+                return (null, user);
             })
         }
 
