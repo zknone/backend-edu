@@ -1,0 +1,23 @@
+<%- include('../port/layout-start', {title: title}) %>
+<%- include('../port/menu') %>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4"><%= title %></h1>
+        <form action="/user/signup" method="post">
+            <div>
+                <label>Логин:</label>
+                <input type="text" name="username" /><br />
+            </div>
+            <div>
+                <label>Пароль:</label>
+                <input type="password" name="password" />
+            </div>
+            <div>
+                <input type="submit" value="Зарегистрироваться" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('../port/layout-end') %> 

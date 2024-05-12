@@ -8,7 +8,7 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: true,
-    }
-})
+    },
+}, { versionKey: false });
 
 module.exports = model('User', UserSchema);

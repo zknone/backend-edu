@@ -23,7 +23,7 @@ router.get('/signup/', (req, res) => {
 });
 
 router.post('/signup',
-    async (req, res) => {
+    async (req, res, next) => {
         const { username, password } = req.body;
         const newUser = new UserModel({
             username,
@@ -32,17 +32,19 @@ router.post('/signup',
 
         try {
             await newUser.save();
-            res.redirect(`/books`);
+            req.login(newUser, err => {
+                if (err) {
+                    return next(err);
+                }
+                res.redirect('/user/me');
+            });
         } catch (error) {
             console.error('Error:', error);
             res.redirect('/404');
         }
-    },
-    passport.authenticate('local', { failureRedirect: '/user/login' }), 
-    (req, res) => {
-        res.redirect('/user/me');
     }
-)
+);
+
 
 router.get('/logout', (req, res) => {
     req.logout(req.user, err => {

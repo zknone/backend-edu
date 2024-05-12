@@ -36,12 +36,11 @@ const UrlDB = process.env.URL_DB;
 
 async function start(PORT, urlDb) {
     try {
-        await mongoose.connect(urlDb, { dbName: 'books' });
-        const users = await UserModel.find().select('-__v');
-        
+        await mongoose.connect(urlDb, { dbName: 'books' });    
         const verify = async (username, password, done) => {
             const user = await UserModel.find({ username: username }).select('-__v');
             console.log('user', user[0]);
+
             if (!user[0]) { return done(null, false) };
 
             if (user[0].password !== password) {
@@ -54,7 +53,8 @@ async function start(PORT, urlDb) {
             cb(null, user.id)
         });
 
-        passport.deserializeUser((id, cb) => {
+        passport.deserializeUser( async (id, cb) => {
+            const users = await UserModel.find().select('-__v');
             const user = users.find(user => user.id === id);
             if (!user) {
                 return cb(new Error('User not found'));
