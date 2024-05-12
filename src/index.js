@@ -9,7 +9,6 @@ const UserModel = require('./models/user');
 const indexRouter = require('./routes/index-route');
 const booksRouter = require('./routes/books-route');
 const userRouter = require('./routes/user-route');
-const user = require('./models/user');
 
 const app = express();
 
@@ -17,18 +16,6 @@ const options = {
     usernameField: 'username',
     passwordField: 'password',
 };
-
-passport.serializeUser((user, cb) => {
-  cb(null, user.id)
-});
-
-passport.deserializeUser( (id, cb) => {
-  db.users.findUserById(id,  (err, user) => {
-    if (err) { return cb(err) }
-    cb(null, user)
-  })
-});
-/// переписать
 
 app.use(express.urlencoded());
 app.use(session({ secret: 'SECRET'}));
@@ -48,37 +35,39 @@ const PORT = process.env.PORT || 3000;
 const UrlDB = process.env.URL_DB;
 
 async function start(PORT, urlDb) {
-    try{
+    try {
         await mongoose.connect(urlDb, { dbName: 'books' });
         const users = await UserModel.find().select('-__v');
+        
+        const verify = async (username, password, done) => {
+            const user = await UserModel.find({ username: username }).select('-__v');
+            console.log('user', user[0]);
+            if (!user[0]) { return done(null, false) };
 
-        console.log(users);
-
-        const verify = ( username, password, done) => {
-            users.map(user => {
-                if (users.length === 0) {
-                    console.log('User null');
-                    return done(null, user);
-                };
-                
-                if (user.username != username) {
-                    console.log('Undefined user');
-                    return done(null, user);
-                } 
-                
-                if (user.password !== password ) {
-                    return done (null, false);
-                }
-                return (null, user);
-            })
+            if (user[0].password !== password) {
+                return done(null, false);
+            }
+            return done(null, user[0]);
         }
+
+        passport.serializeUser((user, cb) => {
+            cb(null, user.id)
+        });
+
+        passport.deserializeUser((id, cb) => {
+            const user = users.find(user => user.id === id);
+            if (!user) {
+                return cb(new Error('User not found'));
+            }
+            cb(null, user);
+        });
 
         passport.use('local', new LocalStrategy(options, verify));
 
         app.listen(PORT, () => {
             console.log(`=== start server PORT ${PORT} ===`);
         })
-    } catch (e){
+    } catch (e) {
         console.log(e);
     }
 }
