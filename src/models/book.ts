@@ -1,5 +1,14 @@
 const {Schema, model} = require('mongoose');
 
+class Book {
+    title: string;
+    description: string;
+    authors: string
+    favorite: string;
+    fileCover: string;
+    fileName: string;
+};
+
 const bookSchema = new Schema({
     title: {
         type: String,
@@ -25,6 +34,7 @@ const bookSchema = new Schema({
         type: String,
         required: false,
     },
-})
+}).add(Book);
+
 
 module.exports = model('Book', bookSchema);

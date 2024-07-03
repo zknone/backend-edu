@@ -83,7 +83,6 @@ io.on('connection', (socket) => {
     const {id} = socket;
     console.log('connection', id);
 
-
     socket.on('message-to-me', (msg) => {
         msg.type = 'me';
         socket.emit('message-to-me', msg);
