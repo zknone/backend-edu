@@ -1,15 +1,39 @@
-const {Schema, model} = require('mongoose');
+import { Schema, model, Document, Model } from 'mongoose';
 
-class Book {
+export class IBook {
     title: string;
     description: string;
-    authors: string
+    authors: string;
     favorite: string;
     fileCover: string;
     fileName: string;
-};
 
-const bookSchema = new Schema({
+    constructor(
+        title: string, 
+        description: string, 
+        authors: string, 
+        favorite: string, 
+        fileCover: string, 
+        fileName: string) {
+        this.title = title;
+        this.description = description;
+        this.authors = authors;
+        this.favorite = favorite;
+        this.fileCover = fileCover;
+        this.fileName = fileName;
+    }
+}
+
+interface Book extends IBook, Document {
+    title: string;
+    description: string;
+    authors: string;
+    favorite: string;
+    fileCover: string;
+    fileName: string;
+}
+
+const bookSchema = new Schema<Book>({
     title: {
         type: String,
         required: true,
@@ -34,7 +58,7 @@ const bookSchema = new Schema({
         type: String,
         required: false,
     },
-}).add(Book);
+});
 
 
-module.exports = model('Book', bookSchema);
+export default model<Book>('Book', bookSchema) as Model<Book>;
