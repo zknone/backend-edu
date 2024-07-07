@@ -143,72 +143,39 @@ router.get('/update/:id', async (req, res) => {
     const {id} = req.params;
     try {    const repo = myContainer.get(bookRepository);
     const book = repo.getById(id);
-            if (!book) {
+    if (!book) {
             res.redirect('/404');
         }
     res.json(book);
-} catch (error) {
-        console.error('Error:', error);
-        res.redirect('/404');
-}
-
-    // try {
-    //     const book = await BookModel.findById(id);
-
-    //     if (!book) {
-    //         res.redirect('/404');
-    //     }
-    //     res.render("books/update", {
-    //         title: "Books | view",
-    //         book:{
-    //             title: book.title ?? '',
-    //             desc: book.description ?? ''
-    //         }
-    //     });
-    
-    // } catch (error) {
-    //     console.error('Error:', error);
-    //     res.redirect('/404');
-    // }
+    } catch (error) {
+            console.error('Error:', error);
+            res.redirect('/404');
+    }
 });
 
 router.post('/update/:id', async (req, res) => {
     const {title, description, authors } = req.body;
     const {id} = req.params;
     const repo = myContainer.get(bookRepository);
-    const book = repo.update(id, title, description, authors);
-    res.json(book);
 
-    // try {
-    //     await BookModel.findByIdAndUpdate(id, {
-    //         title,
-    //         description,
-    //         authors
-    //     });
-    //     res.redirect(`/books`);
-    
-    // } catch (error) {
-    //     console.error('Error:', error);
-    //     res.redirect(`/books/${id}`);
-    // }
+    try {
+        const book = repo.update(id, title, description, authors);
+        res.json(book);
+    } catch (error) {
+        console.error('Error:', error);
+        res.redirect(`/books/${id}`);
+    }
 });
 
 router.post('/delete/:id', async(req, res) => {
     const {id} = req.params;
     const repo = myContainer.get(bookRepository);
-    const book = repo.delete(id);
-    res.json(book);
-
-    // try {
-    //     const book = await BookModel.findById(id);
-
-    //     await BookModel.deleteOne(book);
-    //     res.redirect(`/books`);
-    
-    // } catch (error) {
-    //     console.error('Error:', error);
-    //     res.redirect(`/books/${id}`);
-    // }
+    try {
+        repo.delete(id);
+    } catch (error) {
+        console.error('Error:', error);
+        res.redirect(`/books/${id}`);
+    }
 });
 
 module.exports = router;
