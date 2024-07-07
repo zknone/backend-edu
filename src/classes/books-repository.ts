@@ -1,12 +1,12 @@
 import { IBook } from "../models/book";
 
-export class BooksRepository{
+export abstract class BooksRepository{
 
     constructor() {}
 
-    createBooks(Book: IBook): void {}
-    getBook(id: string): void {}
-    getBooks(): void {}
-    updatedBook(id): void{}
-    deleteBook(id): void{}
+    abstract createBook(Book: IBook): Promise<IBook>;
+    abstract getBook(id: string): Promise<IBook>;
+    abstract getBooks(): Promise<IBook[]>;
+    abstract updatedBook(id: string): Promise<IBook>;
+    abstract deleteBook(id: string): Promise<IBook>;
 }
