@@ -4,6 +4,8 @@ const router = express.Router();
 const http = require('http');
 const BookModel = require('../models/book');
 
+const myContainer = require('../container');
+
 function getCounter(path, callback) {
     const options = {
         hostname: 'counter',
@@ -51,12 +53,16 @@ function incrCounter (path, callback) {
 }
 
 router.get('/', async (req, res) => {
+    const repo = myContainer.get(bookRepository);
+
     try {
-        const books = await BookModel.find().select('-__v');
-        res.render('books', {
-            title: "Books",
-            books: books,
-        });
+        const books = await repo.getAll();
+        res.json(books);
+        // const books = await BookModel.find().select('-__v');
+        // res.render('books', {
+        //     title: "Books",
+        //     books: books,
+        // });
 
     } catch (e) {
         res.status(500).json(e);
@@ -81,17 +87,14 @@ router.get('/create', (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
+    const repo = myContainer.get(bookRepository);
     const { title, description, authors } = req.body;
-    const newBook = new BookModel({
-        title,
-        description,
-        authors
-    });
 
     try {
-        await newBook.save();
+        const book = repo.create(title, description, authors);
+        res.json(book);
         res.redirect(`/books`);
-    } catch (error) {
+    } catch {
         console.error('Error:', error);
         res.redirect('/404');
     }
@@ -99,33 +102,37 @@ router.post('/create', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     const {id} = req.params;
-    try {
-        const book = await BookModel.findById(id);
 
+    const repo = myContainer.get(bookRepository);
+
+
+    try {
+        const book = repo.getById(id);
         if (!book) {
             res.redirect('/404');
         }
-        
+
         incrCounter(`/counter/${id}/incr`, (error) => {
-            if (error) {
-                console.error('Error getting counter:', error);
-                res.redirect('/404');
-            } else {
-                getCounter(`/counter/${id}`, (error, data) => {
                     if (error) {
                         console.error('Error getting counter:', error);
                         res.redirect('/404');
                     } else {
-                        const counter = data?.cnt ?? 0;
-                        res.render("books/view", {
-                            title: 'Book',
-                            book: book,
-                            counter: counter
+                        getCounter(`/counter/${id}`, (error, data) => {
+                            if (error) {
+                                console.error('Error getting counter:', error);
+                                res.redirect('/404');
+                            } else {
+                                const counter = data?.cnt ?? 0;
+                                res.render("books/view", {
+                                    title: 'Book',
+                                    book: book,
+                                    counter: counter
+                                });
+                            }
                         });
                     }
-                });
-            }
-        })
+                })
+        res.json(book);
     } catch (error) {
         console.error('Error:', error);
         res.redirect('/404');
@@ -134,39 +141,26 @@ router.get('/:id', async (req, res) => {
 
 router.get('/update/:id', async (req, res) => {
     const {id} = req.params;
-
-    try {
-        const book = await BookModel.findById(id);
-
-        if (!book) {
+    try {    const repo = myContainer.get(bookRepository);
+    const book = repo.getById(id);
+    if (!book) {
             res.redirect('/404');
         }
-        res.render("books/update", {
-            title: "Books | view",
-            book:{
-                title: book.title ?? '',
-                desc: book.description ?? ''
-            }
-        });
-    
+    res.json(book);
     } catch (error) {
-        console.error('Error:', error);
-        res.redirect('/404');
+            console.error('Error:', error);
+            res.redirect('/404');
     }
 });
 
 router.post('/update/:id', async (req, res) => {
     const {title, description, authors } = req.body;
     const {id} = req.params;
+    const repo = myContainer.get(bookRepository);
 
     try {
-        await BookModel.findByIdAndUpdate(id, {
-            title,
-            description,
-            authors
-        });
-        res.redirect(`/books`);
-    
+        const book = repo.update(id, title, description, authors);
+        res.json(book);
     } catch (error) {
         console.error('Error:', error);
         res.redirect(`/books/${id}`);
@@ -175,13 +169,9 @@ router.post('/update/:id', async (req, res) => {
 
 router.post('/delete/:id', async(req, res) => {
     const {id} = req.params;
-
+    const repo = myContainer.get(bookRepository);
     try {
-        const book = await BookModel.findById(id);
-
-        await BookModel.deleteOne(book);
-        res.redirect(`/books`);
-    
+        repo.delete(id);
     } catch (error) {
         console.error('Error:', error);
         res.redirect(`/books/${id}`);
