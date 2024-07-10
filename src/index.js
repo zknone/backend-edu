@@ -1,12 +1,12 @@
 const express = require('express');
 const path = require('path');
-const mongoose = require('mongoose');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const UserModel = require('./models/user');
 const socketIO = require('socket.io');
 const http = require('http');
+
 
 const indexRouter = require('./routes/index-route');
 const booksRouter = require('./routes/books-route');
@@ -38,9 +38,8 @@ app.use('/', indexRouter);
 const PORT = process.env.PORT || 3000;
 const UrlDB = process.env.URL_DB;
 
-async function start(PORT, urlDb) {
+async function start(PORT) {
     try {
-        await mongoose.connect(urlDb, { dbName: 'books' });
         const verify = async (username, password, done) => {
             const user = await UserModel.findOne({ username: username }).select('-__v');
             console.log('user', user);

@@ -1,5 +1,5 @@
-const express = require('express');
-const passport = require('passport');
+import express, {Request, Response} from 'express';
+import passport from 'passport';
 const router = express.Router();
 const UserModel = require('../models/user');
 
@@ -16,14 +16,14 @@ router.post('/login',
     }
 )
 
-router.get('/signup/', (req, res) => {
+router.get('/signup/', (req: Request, res: Response) => {
     res.render('user/signup', {
         title: "Login",
     });
 });
 
 router.post('/signup',
-    async (req, res, next) => {
+    async (req: Request, res: Response, next) => {
         const { username, password } = req.body;
         const newUser = new UserModel({
             username,
@@ -46,9 +46,9 @@ router.post('/signup',
 );
 
 
-router.get('/logout', (req, res) => {
+router.get('/logout', (req: Request, res: Response) => {
     req.logout(req.user, err => {
-        if(err) return next(err);
+        if(err) return err;
             res.redirect('/');
     })
 })
