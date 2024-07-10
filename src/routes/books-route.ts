@@ -1,12 +1,12 @@
-const uploadBookRouter = require('./upload-book');
-const express = require('express');
+import uploadBookRouter from './upload-book';
+import express, {Request, Response} from 'express';
 const router = express.Router();
 const http = require('http');
-const BookModel = require('../models/book');
+import { BooksService} from '../books/book.service'
 
 const myContainer = require('../container');
 
-function getCounter(path, callback) {
+function getCounter(path: string, callback: { (error: any, data: any): void; (arg0: null, arg1: null): void; }) {
     const options = {
         hostname: 'counter',
         port: process.env.COUNTER_PORT || 3000, 
@@ -29,7 +29,7 @@ function getCounter(path, callback) {
     req.end();
 }
 
-function incrCounter (path, callback) {
+function incrCounter (path: string, callback: { (error: any): void; (arg0: null, arg1: null): void; }) {
     const options = {
         hostname: 'counter',
         port: process.env.COUNTER_PORT || 3000, 
@@ -52,24 +52,13 @@ function incrCounter (path, callback) {
     req.end();
 }
 
-router.get('/', async (req, res) => {
-    const repo = myContainer.get(bookRepository);
-
-    try {
-        const books = await repo.getAll();
-        res.json(books);
-        // const books = await BookModel.find().select('-__v');
-        // res.render('books', {
-        //     title: "Books",
-        //     books: books,
-        // });
-
-    } catch (e) {
-        res.status(500).json(e);
-    }
+router.get('/', async (req: Request, res: Response) => {
+    const service: BooksService = myContainer.get("BOOKS_SERVICE");
+    const books = await service.findAll();
+    res.json(books);
 })
 
-router.get('/download/:id', (req, res) => {
+router.get('/download/:id', (req: Request, res: Response) => {
     // res.download(path, book.fileName);
 });
 
@@ -87,27 +76,17 @@ router.get('/create', (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
-    const repo = myContainer.get(bookRepository);
-    const { title, description, authors } = req.body;
-
-    try {
-        const book = repo.create(title, description, authors);
-        res.json(book);
-        res.redirect(`/books`);
-    } catch {
-        console.error('Error:', error);
-        res.redirect('/404');
-    }
+    const service: BooksService = myContainer.get("BOOKS_SERVICE");
+    const book = await service.create(req.body);
+    res.json(book);
 });
 
 router.get('/:id', async (req, res) => {
-    const {id} = req.params;
-
-    const repo = myContainer.get(bookRepository);
-
+    const {id} = req.params;    
+    const service: BooksService = myContainer.get("BOOKS_SERVICE");
 
     try {
-        const book = repo.getById(id);
+        const book = service.getById(id);
         if (!book) {
             res.redirect('/404');
         }
@@ -141,8 +120,9 @@ router.get('/:id', async (req, res) => {
 
 router.get('/update/:id', async (req, res) => {
     const {id} = req.params;
-    try {    const repo = myContainer.get(bookRepository);
-    const book = repo.getById(id);
+    try {    
+        const service: BooksService = myContainer.get("BOOKS_SERVICE");
+        const book = service.getById(id);
     if (!book) {
             res.redirect('/404');
         }
@@ -156,10 +136,10 @@ router.get('/update/:id', async (req, res) => {
 router.post('/update/:id', async (req, res) => {
     const {title, description, authors } = req.body;
     const {id} = req.params;
-    const repo = myContainer.get(bookRepository);
+    const service: BooksService = myContainer.get("BOOKS_SERVICE");
 
     try {
-        const book = repo.update(id, title, description, authors);
+        const book = service.update(id, {title, description, authors});
         res.json(book);
     } catch (error) {
         console.error('Error:', error);
@@ -169,13 +149,13 @@ router.post('/update/:id', async (req, res) => {
 
 router.post('/delete/:id', async(req, res) => {
     const {id} = req.params;
-    const repo = myContainer.get(bookRepository);
+    const service = myContainer.get("BOOKS_SERVICE");
     try {
-        repo.delete(id);
+        service.delete(id);
     } catch (error) {
         console.error('Error:', error);
         res.redirect(`/books/${id}`);
     }
 });
 
-module.exports = router;
+export default router;
