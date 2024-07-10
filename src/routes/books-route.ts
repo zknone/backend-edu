@@ -55,7 +55,7 @@ function incrCounter(path: string, callback: (error: Error | null, data: any | n
 }
 
 router.get('/', async (req: Request, res: Response) => {
-    const service: BooksService = myContainer.get("BOOKS_SERVICE");
+    const service: BooksService = myContainer.get(BooksService);
     const books = await service.findAll();
     res.json(books);
 })
@@ -78,14 +78,14 @@ router.get('/create', (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
-    const service: BooksService = myContainer.get("BOOKS_SERVICE");
+    const service: BooksService = myContainer.get(BooksService);
     const book = await service.create(req.body);
     res.json(book);
 });
 
 router.get('/:id', async (req, res) => {
     const {id} = req.params;    
-    const service: BooksService = myContainer.get("BOOKS_SERVICE");
+    const service: BooksService = myContainer.get(BooksService);
 
     try {
         const book = service.getById(id);
@@ -123,7 +123,7 @@ router.get('/:id', async (req, res) => {
 router.get('/update/:id', async (req, res) => {
     const {id} = req.params;
     try {    
-        const service: BooksService = myContainer.get("BOOKS_SERVICE");
+        const service: BooksService = myContainer.get(BooksService);
         const book = service.getById(id);
     if (!book) {
             res.redirect('/404');
@@ -138,7 +138,7 @@ router.get('/update/:id', async (req, res) => {
 router.post('/update/:id', async (req, res) => {
     const {title, description, authors } = req.body;
     const {id} = req.params;
-    const service: BooksService = myContainer.get("BOOKS_SERVICE");
+    const service: BooksService = myContainer.get(BooksService);
 
     try {
         const book = service.update(id, {title, description, authors});
@@ -151,7 +151,7 @@ router.post('/update/:id', async (req, res) => {
 
 router.post('/delete/:id', async(req, res) => {
     const {id} = req.params;
-    const service = myContainer.get("BOOKS_SERVICE");
+    const service: BooksService = myContainer.get(BooksService);
     try {
         service.delete(id);
     } catch (error) {
