@@ -1,7 +1,7 @@
 import uploadBookRouter from './upload-book';
 import express, {Request, Response} from 'express';
 const router = express.Router();
-const http = require('http');
+import http, {RequestOptions, IncomingMessage} from 'http';
 import { BooksService} from '../books/book.service'
 
 const myContainer = require('../container');
@@ -14,7 +14,7 @@ function getCounter(path: string, callback: { (error: any, data: any): void; (ar
         method: 'GET'
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, (res: IncomingMessage) => {
         let data = '';
         res.on('data', (chunk) => {
             data += chunk;
@@ -23,21 +23,21 @@ function getCounter(path: string, callback: { (error: any, data: any): void; (ar
             callback(null, JSON.parse(data));
         });
     });
-    req.on('error', (error) => {
+    req.on('error', (error: Error) => {
         callback(error, null);
     });
     req.end();
 }
 
-function incrCounter (path: string, callback: { (error: any): void; (arg0: null, arg1: null): void; }) {
-    const options = {
+function incrCounter(path: string, callback: (error: Error | null, data: any | null) => void) {
+    const options: RequestOptions = {
         hostname: 'counter',
         port: process.env.COUNTER_PORT || 3000, 
         path: path,
         method: 'POST'
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, (res: IncomingMessage) => {
         let data = '';
         res.on('data', (chunk) => {
             data += chunk;
@@ -46,9 +46,11 @@ function incrCounter (path: string, callback: { (error: any): void; (arg0: null,
             callback(null, JSON.parse(data));
         });
     });
-    req.on('error', (error) => {
+
+    req.on('error', (error: Error) => {
         callback(error, null);
     });
+
     req.end();
 }
 

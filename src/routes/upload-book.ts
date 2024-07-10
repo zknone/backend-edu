@@ -1,12 +1,12 @@
-const express = require('express');
+import express, { Request, Response} from 'express';
 const router = express.Router();
-const fileMulter = require('../middleware/file');
+import fileUploader from '../middleware/file';
 
-router.post('/:id', fileMulter.single('book'), (req, res) => {
+router.post('/:id', fileUploader.single('book'), (req: Request, res: Response) => {
     const { id } = req.params;
     const store = req.app.get('store');
 
-    const idx = store.books.findIndex(el => el.id === id);
+    const idx = store.books.findIndex((el: { id: string; }) => el.id === id);
 
     if (idx !== -1){
         if (req.file) {
@@ -19,4 +19,4 @@ router.post('/:id', fileMulter.single('book'), (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
